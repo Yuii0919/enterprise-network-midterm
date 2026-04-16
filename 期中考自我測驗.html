@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>企業網路通訊 — 期中考自我測驗（100 題）</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --panel: #1a2332;
+      --border: #2d3a4f;
+      --text: #e8eef7;
+      --muted: #8b9cb3;
+      --accent: #3d8bfd;
+      --accent-dim: #2563c7;
+      --ok: #34d399;
+      --bad: #f87171;
+      --warn: #fbbf24;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Segoe UI", "Microsoft JhengHei", "PingFang TC", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.55;
+      min-height: 100vh;
+    }
+    header {
+      padding: 1.25rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, #152030 0%, var(--bg) 100%);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    header h1 {
+      margin: 0 0 0.35rem;
+      font-size: 1.15rem;
+      font-weight: 600;
+    }
+    header p {
+      margin: 0;
+      font-size: 0.85rem;
+      color: var(--muted);
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      align-items: center;
+      margin-top: 0.75rem;
+    }
+    button, .btn {
+      font-family: inherit;
+      cursor: pointer;
+      border: 1px solid var(--border);
+      background: var(--panel);
+      color: var(--text);
+      padding: 0.45rem 0.9rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+    }
+    button:hover, .btn:hover {
+      border-color: var(--accent);
+      background: #243044;
+    }
+    button.primary {
+      background: var(--accent-dim);
+      border-color: var(--accent);
+      color: #fff;
+    }
+    button.primary:hover { background: var(--accent); }
+    .stat {
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-left: auto;
+    }
+    .pager {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+      margin: 1rem 0 0.25rem;
+      padding: 0.75rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .pager .page-label { font-size: 0.85rem; color: var(--muted); margin-right: 0.25rem; }
+    .pager .page-btns { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+    .pager button.page-num {
+      min-width: 2.1rem;
+      padding: 0.35rem 0.5rem;
+      font-variant-numeric: tabular-nums;
+    }
+    .pager button.page-num.active {
+      border-color: var(--accent);
+      background: rgba(61, 139, 253, 0.2);
+      color: #fff;
+    }
+    .page-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+    main { max-width: 720px; margin: 0 auto; padding: 1rem 1.25rem 3rem; }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+      margin-bottom: 0.85rem;
+    }
+    .card h2 {
+      margin: 0 0 0.65rem;
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 500;
+    }
+    .q-title {
+      font-size: 1rem;
+      margin-bottom: 0.75rem;
+      font-weight: 500;
+    }
+    .opts { display: flex; flex-direction: column; gap: 0.4rem; }
+    label.opt {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.5rem;
+      padding: 0.5rem 0.65rem;
+      border-radius: 8px;
+      border: 1px solid transparent;
+      cursor: pointer;
+    }
+    label.opt:hover { background: rgba(61, 139, 253, 0.08); }
+    label.opt input { margin-top: 0.2rem; accent-color: var(--accent); }
+    label.opt.correct { border-color: var(--ok); background: rgba(52, 211, 153, 0.12); }
+    label.opt.wrongPick { border-color: var(--bad); background: rgba(248, 113, 113, 0.1); }
+    .result-banner {
+      display: none;
+      padding: 1rem;
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      border: 1px solid var(--border);
+      background: #152535;
+    }
+    .result-banner.show { display: block; }
+    .result-banner strong { color: var(--ok); font-size: 1.25rem; }
+    .result-banner .sub { font-size: 0.9rem; color: var(--muted); margin-top: 0.35rem; }
+    footer {
+      text-align: center;
+      padding: 1rem;
+      color: var(--muted);
+      font-size: 0.75rem;
+      border-top: 1px solid var(--border);
+    }
+    a { color: var(--accent); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>企業網路通訊 — 期中考自我測驗</h1>
+    <p>共 100 題單選 · 每頁 10 題 · 答案依 NotebookLM／教材整理</p>
+    <div class="toolbar">
+      <button type="button" class="primary" id="btnSubmitPage">本頁交卷計分</button>
+      <button type="button" class="primary" id="btnSubmitAll">全部交卷計分</button>
+      <button type="button" id="btnShowKeyPage">顯示本頁解答</button>
+      <button type="button" id="btnShowKeyAll">顯示全部解答</button>
+      <button type="button" id="btnReset">重填</button>
+      <span class="stat" id="statProgress">已作答 0 / 100</span>
+    </div>
+  </header>
+  <main>
+    <div class="result-banner" id="resultBanner" role="status"></div>
+    <div id="quizRoot"></div>
+  </main>
+  <footer>離線可用 · 請以瀏覽器開啟本檔</footer>
+  <script>
+(function () {
+  /* 題庫：每題 choices 四選一，answer 為 0～3 對應 A～D */
+  const BANK = [
+    { stem: "國家資訊基礎建設 (NII) 的英文全名為何？", choices: ["National Internet Infrastructure","National Information Infrastructure","Network Information Interface","Network Internet Infrastructure"], answer: 1 },
+    { stem: "下列何者不是 NII 計畫的十項重點工作之一？", choices: ["網路建設","教育訓練","太空科技發展","電子商務"], answer: 2 },
+    { stem: "NII 目前的兩大目標中，除了「加值各領域創新與應用」之外，另一項為何？", choices: ["整合能量接軌國際","提升硬體設備製造","發展人工智慧網路","減少網路犯罪"], answer: 0 },
+    { stem: "「整合能量接軌國際」的子計畫中，不包含下列何者？", choices: ["高效能計算","高頻寬網路","高解析度顯示","高備援儲存"], answer: 2 },
+    { stem: "下列何者屬於「加值各領域創新與應用」的子計畫？", choices: ["科學試算服務","佈建海底電纜","研發新型處理器","推廣 5G 通訊"], answer: 0 },
+    { stem: "在網際網路多樣化服務中，全球資訊網的英文簡稱是？", choices: ["Gopher","WWW","FTP","BBS"], answer: 1 },
+    { stem: "提供「檔案傳輸」服務的通訊協定英文簡稱是？", choices: ["Archie","Telnet","FTP","IRC"], answer: 2 },
+    { stem: "遠端登錄服務通常使用下列哪一種協定？", choices: ["Gopher","Telnet 或 SSH","MUD","ICQ"], answer: 1 },
+    { stem: "早期網際網路中的「小地鼠資訊系統」英文名稱為何？", choices: ["Archie","MUD","Gopher","BBS"], answer: 2 },
+    { stem: "「檔案收尋服務」的英文名稱為？", choices: ["Archie","ICQ","IRC","Net News"], answer: 0 },
+    { stem: "網際網路服務中的「線上聊天」簡稱為何？", choices: ["MUD","IRC","BBS","WWW"], answer: 1 },
+    { stem: "下列何者屬於網路遊戲的早期服務簡稱？", choices: ["MUD","SSH","FTP","Archie"], answer: 0 },
+    { stem: "下列何者不屬於教材中提到的網際網路網站入口？", choices: ["HiNet","TANnet","封閉區域網路 (LAN)","民營的 ISP"], answer: 2 },
+    { stem: "網路作業系統 (NOS) 主要分為 Client / Server 作業系統與哪一種系統？", choices: ["Windows / Mac 系統","Peer / Peer 系統","Master / Slave 系統","Host / Terminal 系統"], answer: 1 },
+    { stem: "在選擇網路系統時，下列哪個因素通常不包含在參考清單中？", choices: ["網路體積","員工培訓","電腦機殼顏色","成本"], answer: 2 },
+    { stem: "下列何者不屬於全球資訊網 (WWW) 的瀏覽器應用軟體？", choices: ["Internet Explorer (IE)","Firefox","Opera","Cuteftp"], answer: 3 },
+    { stem: "下列哪一套軟體主要用於檔案傳輸 (FTP)？", choices: ["Outlook","WS_ftp","Eudora","Firefox"], answer: 1 },
+    { stem: "Outlook 與 Eudora 主要屬於哪一種類型的網路應用軟體？", choices: ["瀏覽器","檔案傳輸","電子郵件 (E-mail)","網路論壇"], answer: 2 },
+    { stem: "下列何者不屬於電腦硬體中的網路設備？", choices: ["路由器 (Router)","閘道器 (Gateway)","Linux 作業系統","集線器 (Hub)"], answer: 2 },
+    { stem: "網路卡 (NIC) 的英文全名中，\"N\" 代表什麼？", choices: ["Network","Node","Number","Name"], answer: 0 },
+    { stem: "中繼器 (Repeater) 在 10 Base2 及 10 Base5 的架設規則為何？", choices: ["1-2-3-4-5","5-4-3-2-1","8-0-2-1-1","4-3-2-1-0"], answer: 1 },
+    { stem: "圖示中，將多個節點集中連接的 Hub 設備，中文名稱為何？", choices: ["路由器","橋接器","集線器","中繼器"], answer: 2 },
+    { stem: "交換式集線器的英文名稱為何？", choices: ["Switch Hub","Router Hub","Bridge Hub","Gateway Hub"], answer: 0 },
+    { stem: "當需要連接使用 IPX Protocol 的 LAN-A 與使用 TCP/IP Protocol 的 LAN-B 時，可以使用下列哪種設備？", choices: ["橋接器 (Bridge)","中繼器 (Repeater)","網路卡 (NIC)","數據機 (Modem)"], answer: 0 },
+    { stem: "若要連接兩個不同的區域網路，最適合使用下列哪一種設備？", choices: ["路由器 (Router)","網路線","列印伺服器","中繼器"], answer: 0 },
+    { stem: "負責連接內部區域網路與外部廣域網路的設備通常稱為？", choices: ["集線器","閘道器 (Gateway)","交換器","橋接器"], answer: 1 },
+    { stem: "在傳送端與接收端之間，能將二進位訊號轉為正弦波，再轉回二進位訊號的設備為何？", choices: ["數據機 (Modem)","路由器","網路卡","列印伺服器"], answer: 0 },
+    { stem: "提供簡單而高效的網路列印解決方案，可讓網路中任何位置的用戶共用印表機的設備是？", choices: ["列印伺服器","檔案伺服器","數據機","閘道器"], answer: 0 },
+    { stem: "數位調變技術中，ASK 代表什麼調變？", choices: ["頻移鍵控調變","相移鍵控調變","幅移鍵控調變","垂直振幅調變"], answer: 2 },
+    { stem: "FSK 代表何種數位調變技術？", choices: ["頻移鍵控調變","幅移鍵控調變","垂直振幅調變","相移鍵控調變"], answer: 0 },
+    { stem: "相移鍵控調變的英文縮寫為何？", choices: ["ASK","FSK","PSK","QAM"], answer: 2 },
+    { stem: "QAM 代表何種數位調變技術？", choices: ["頻移鍵控調變","垂直振幅調變","相移鍵控調變","幅移鍵控調變"], answer: 1 },
+    { stem: "在任一時間，信號只能由傳送端單向傳給接收端，此種傳輸方向性稱為？", choices: ["全雙工傳輸","半雙工傳輸","單工傳輸","並列傳輸"], answer: 2 },
+    { stem: "時間1時可由A傳給B，時間2時可由B傳給A，但不能同時進行雙向傳輸，此稱為？", choices: ["全雙工傳輸","半雙工傳輸","單工傳輸","串列傳輸"], answer: 1 },
+    { stem: "任一時間都可以同時進行雙向傳送與接收的傳輸方式稱為？", choices: ["單工傳輸","半雙工傳輸","全雙工傳輸","同步傳輸"], answer: 2 },
+    { stem: "依傳輸順序區分，將位元 01101010 一個接一個循序傳送的方式稱為？", choices: ["並列傳輸","串列傳輸","同步傳輸","寬頻傳輸"], answer: 1 },
+    { stem: "依傳輸順序區分，同時在多條線路上傳送多個位元的方式稱為？", choices: ["串列傳輸","並列傳輸","基頻傳輸","非同步傳輸"], answer: 1 },
+    { stem: "資料傳送時，在封包前後加上「開始位元」與「結束位元」的包裝方式稱為？", choices: ["同步傳輸","非同步傳輸","全雙工傳輸","寬頻傳輸"], answer: 1 },
+    { stem: "將一大串資料區塊前後加上「同步位元」與「區塊位元(檢查碼、結束碼)」的包裝方式稱為？", choices: ["同步傳輸","非同步傳輸","單工傳輸","串列傳輸"], answer: 0 },
+    { stem: "依頻道多寡分類，傳輸單一信號的稱為基頻傳輸，傳輸多個信號的稱為？", choices: ["窄頻傳輸","寬頻傳輸","高頻傳輸","低頻傳輸"], answer: 1 },
+    { stem: "T1 規格的網路傳輸速率為何？", choices: ["1.544 Mbps","2.048 Mbps","6.312 Mbps","44.736 Mbps"], answer: 0 },
+    { stem: "傳輸速率為 44.736 Mbps 的規格為何？", choices: ["T1","T2","T3","T4"], answer: 2 },
+    { stem: "T3 的速率相當於幾個 T1？", choices: ["4 個","7 個","28 個","168 個"], answer: 2 },
+    { stem: "E1 規格的網路傳輸速率為何？", choices: ["1.544 Mbps","2.048 Mbps","6.312 Mbps","8.448 Mbps"], answer: 1 },
+    { stem: "網路基礎知識中，Bandwidth 代表的意思為何？", choices: ["協定","網路卡","頻寬","伺服器"], answer: 2 },
+    { stem: "電腦網路通訊時，通訊雙方必須遵守的資料格式與時序稱為什麼？", choices: ["網路硬體","通訊協定 (Protocol)","頻寬","網路作業系統"], answer: 1 },
+    { stem: "下列何者為目前網路常用的通訊標準？", choices: ["NetBEUI","HDMI","USB","SATA"], answer: 0 },
+    { stem: "TCP/IP 通訊協定中，IP 代表什麼？", choices: ["Internal Protocol","Internet Protocol","International Packet","Intranet Port"], answer: 1 },
+    { stem: "ISDN 的全名為何？", choices: ["Integrated Service Digital Network","Internal System Data Network","Internet Service Domain Name","International Standard Digital Node"], answer: 0 },
+    { stem: "MAC 位址 (Media Access Control) 又稱為什麼位址？", choices: ["軟體位址","虛擬位址","邏輯位址","硬體位址"], answer: 3 },
+    { stem: "在 OSI 模型中，哪一層負責 MAC 位址？", choices: ["實體層","資料鏈結層 (第二層)","網路層","應用層"], answer: 1 },
+    { stem: "MAC 位址總共有多少位元？", choices: ["16 位元","32 位元","48 位元","64 位元"], answer: 2 },
+    { stem: "MAC 位址總共佔用幾個位元組 (Byte)？", choices: ["4 個","6 個","8 個","16 個"], answer: 1 },
+    { stem: "作為「廣播位址」的 MAC 位址表示法為何？", choices: ["00:00:00:00:00:00","ff:ff:ff:ff:ff:ff","255:255:255:255","aa:bb:cc:dd:ee:ff"], answer: 1 },
+    { stem: "在命令提示字元中，執行哪個指令可以查詢網路卡的 Physical Address (MAC 位址)？", choices: ["ping","tracert","netstat","ipconfig /all"], answer: 3 },
+    { stem: "在 MAC 訊框內容中，目的位址和來源位址各佔用多少 Byte？", choices: ["2 Byte","4 Byte","6 Byte","8 Byte"], answer: 2 },
+    { stem: "在 MAC 訊框內容中，主要資料的容量範圍大約為何？", choices: ["1-10 Byte","46-1500 Byte","2000-5000 Byte","固定為 64 Byte"], answer: 1 },
+    { stem: "判斷兩個 IP 位址是否屬於同一個子網域，需要將 IP 位址轉為二進制後，與子網路遮罩進行何種運算？", choices: ["OR 運算","AND 運算","XOR 運算","NOT 運算"], answer: 1 },
+    { stem: "假設 IP 為 203.72.36.96，子網路遮罩為 255.255.255.0，經過 AND 運算後的網段位址為何？", choices: ["203.72.36.96","203.72.36.0","203.72.0.0","255.255.255.0"], answer: 1 },
+    { stem: "Class A 等級的預設子網路遮罩為何？", choices: ["255.0.0.0","255.255.0.0","255.255.255.0","255.255.255.255"], answer: 0 },
+    { stem: "Class C 等級的預設子網路遮罩為何？", choices: ["255.0.0.0","255.255.0.0","255.255.255.0","255.255.255.255"], answer: 2 },
+    { stem: "下列哪一個保留 IP 主要是提供給「本機回應位址」使用？", choices: ["0.0.0.0","10.X.X.X","127.0.0.1","192.168.X.X"], answer: 2 },
+    { stem: "Class A 的私人虛擬 IP 範圍為何？", choices: ["10.X.X.X","172.16.X.X ~ 172.31.X.X","192.168.X.X","127.X.X.X"], answer: 0 },
+    { stem: "Class B 的私人虛擬 IP 範圍為何？", choices: ["10.X.X.X","172.16.X.X ~ 172.31.X.X","192.168.X.X","224.X.X.X ~ 255.X.X.X"], answer: 1 },
+    { stem: "Class D 與 E 保留的 IP (224.X.X.X ~ 255.X.X.X) 主要用途為何？", choices: ["私人虛擬 IP","本機回應","Multicast、實驗","廣播位址"], answer: 2 },
+    { stem: "由於 IPv4 位址不敷使用，提出的下一代網際網路協定 IPv6 共有多少位元？", choices: ["32 位元","64 位元","128 位元","256 位元"], answer: 2 },
+    { stem: "IPv6 位址 FE90:0:0:0:0:FF:9AFE:4CA2 經過壓縮後應表示為何？", choices: ["FE90::FF:9AFE:4CA2","FE90:0:FF:9AFE:4CA2","FE90::FF::9AFE:4CA2","FE9::9AFE:4CA2"], answer: 0 },
+    { stem: "在 IPv6 的壓縮表示法中，「::」(雙冒號) 代表什麼意義？", choices: ["省略所有的 F","一長串設定為 0 的 16 位元區塊","廣播位址的結尾","子網路遮罩的分隔符號"], answer: 1 },
+    { stem: "若 IPv6 壓縮位址為 FF00::2 (原為 FF00:0:0:0:0:0:0:2)，請問「::」共省略了多少個 0 位元？", choices: ["16 位元","32 位元","80 位元","96 位元"], answer: 3 },
+    { stem: "關於 IPv6 首碼表示法，它不使用子網路遮罩，而是類似 IPv4 的哪一種表示法？", choices: ["NAT","DHCP","CIDR","ARP"], answer: 2 },
+    { stem: "IPv6 的子網路首碼表示法格式為何？", choices: ["IP / 子網路遮罩","address / prefix-length","IP - MAC","address : port"], answer: 1 },
+    { stem: "在 IPv4 和 IPv6 混合節點的位址表示法中 (例如 ::10.11.3.123)，低 32 位元通常使用何種格式表示？", choices: ["十六進位","八進位","十進位","二進位"], answer: 2 },
+    { stem: "IPv6 的工作模式中，不包含下列哪一種？", choices: ["單點傳送 (unicast)","任點傳送 (anycast)","多點傳送 (multicast)","廣播傳送 (broadcast)"], answer: 3 },
+    { stem: "IPv6 的單點傳送回送位址 (loopback address) 表示為何？", choices: ["::1","::255","127.0.0.1","0::0"], answer: 0 },
+    { stem: "IPv6 的單點傳送方式分為全域 (Global) 位址、連結本機 (Link Local) 位址以及？", choices: ["場地本機 (Sit Local) 位址","廣播本機位址","虛擬本機位址","動態本機位址"], answer: 0 },
+    { stem: "IPv6 的「連結本機 (Link Local) 格式」中，前 10 位元固定為何？", choices: ["1111111111","1111111010","1111111011","0000000000"], answer: 1 },
+    { stem: "IPv6 的「場地本機 (Sit Local) 位址格式」中，前 10 位元固定為何？", choices: ["1111111010","1111111011","1111111111","0000000011"], answer: 1 },
+    { stem: "IPv6 的「多點傳送格式」中，前 8 位元固定為何？", choices: ["11111111","11111110","00000000","10101010"], answer: 0 },
+    { stem: "封包會送到該位址識別的「其中一個介面」，此種 IPv6 工作模式稱為？", choices: ["單點傳送","任點傳送","多點傳送","廣播傳送"], answer: 1 },
+    { stem: "關於 IPv6 的未來發展，環境監測網路及居家醫療系統屬於下列哪一種應用？", choices: ["多媒體應用","感測網路 (Sensor Network)","移動網路","虛擬實境"], answer: 1 },
+    { stem: "在區域網路 (LAN) 的實體傳輸中，最主要的傳遞工具通常是？", choices: ["數據機","集線器 (HUB)","路由器","衛星天線"], answer: 1 },
+    { stem: "廣域網路 (WAN) 主要的傳遞工具通常是？", choices: ["路由器 (Router) 或數據機","集線器","網路線","網路卡"], answer: 0 },
+    { stem: "下列關於區域網路 (LAN) 與廣域網路 (WAN) 的比較，何者敘述正確？", choices: ["LAN 的傳送距離不受限制","WAN 的傳送速度通常比 LAN 快","WAN 的傳送介質主要為公眾網路","LAN 的連接成本較高"], answer: 2 },
+    { stem: "區域網路的傳送距離大約在多少範圍內？", choices: ["1-2 公里","50-100 公里","跨國距離","1000 公里以上"], answer: 0 },
+    { stem: "RJ-45 雙絞線的兩種標準接線方式，除了 T568A 之外，另一種為？", choices: ["T568B","T568C","T569A","T570B"], answer: 0 },
+    { stem: "將多個區域網路或廣域網路互相連接起來的龐大網路稱為？", choices: ["Intranet","Extranet","網際網路 (Internet)","Sensor Network"], answer: 2 },
+    { stem: "企業利用 Internet 技術來提高內部各部門資訊流通與資源分享的網路稱為？", choices: ["廣域網路","網際網路","Intranet (企業網路)","藍牙網路"], answer: 2 },
+    { stem: "關於企業內部網路 (Intranet) 的好處，下列何者為非？", choices: ["資訊的分享","昂貴設備的分享","減少 MIS 人員的開支","完全取代網際網路 (Internet)"], answer: 3 },
+    { stem: "企業利用網路技術去服務「特定使用對象 (Closed User Group)」，而非一般大眾的網路稱為？", choices: ["Internet","Extranet (企業間網路)","Intranet","區域網路"], answer: 1 },
+    { stem: "國內最早具備 Extranet 架構的單位之一為何？", choices: ["學校圖書館","證券金融交易 (證交所)","個人網咖","遊戲公司"], answer: 1 },
+    { stem: "ADSL 的全名為何？", choices: ["非對稱數位式用戶線路","類比式數據傳輸線路","非同步數位傳輸系統","非對稱類比用戶迴路"], answer: 0 },
+    { stem: "ADSL 技術主要是利用哪一種實體線路來提供上網服務？", choices: ["傳統電話線","光纖電纜","有線電視同軸電纜","衛星微波"], answer: 0 },
+    { stem: "Cable Modem 主要是透過何種傳輸介質來傳送上傳與下載資料？", choices: ["傳統電話線","無線電波","有線電視的同軸電纜","雙絞線"], answer: 2 },
+    { stem: "關於 Cable Modem 的傳輸特性，下列何者正確？", choices: ["對稱式且專用","非對稱式且共享 (Share)","無法傳送影音服務","採用星型網路架構"], answer: 1 },
+    { stem: "ADSL Modem 的網路架構屬於哪一種，且具有容易維修的特點？", choices: ["串接型","環狀型","星型","網狀型"], answer: 2 },
+    { stem: "相較於 Cable Modem，ADSL Modem 在哪一方面的表現較佳？", choices: ["硬體建置成本較低","系統安全性較佳","頻寬為共享制","下載速度無限大"], answer: 1 },
+    { stem: "在 T 載波專線連接技術中，目前較常使用的是哪兩種專線？", choices: ["T1 及 T3","T1 及 T4","T2 及 T4","T2 及 T3"], answer: 0 },
+    { stem: "T1 專線的 DS 等級 (數位信號) 為何？", choices: ["DS-1","DS-2","DS-3","DS-4"], answer: 0 },
+    { stem: "ISDN 提供使用者點對點的數位網路連接，其完整的中文名稱為何？", choices: ["國際數據傳輸網路","整合服務數位網路","內部系統傳輸網路","獨立伺服器網路"], answer: 1 },
+    { stem: "ISDN 的標準中，適用於北美地區的規格名稱為何？", choices: ["ETSI","Euro-ISDN","NET INS-64","ANSI (American Standard)"], answer: 3 }
+  ];
+
+  const LETTERS = ["A","B","C","D"];
+  const PAGE_SIZE = 10;
+  const NUM_PAGES = Math.ceil(BANK.length / PAGE_SIZE);
+
+  const root = document.getElementById("quizRoot");
+  const banner = document.getElementById("resultBanner");
+  const stat = document.getElementById("statProgress");
+
+  let currentPage = 0;
+  const userAnswers = new Array(BANK.length).fill(null);
+  const revealedPages = new Set();
+  let allRevealed = false;
+
+  function getSelected(i) {
+    const v = userAnswers[i];
+    return v === undefined || v === null ? null : v;
+  }
+
+  function questionLocked(i) {
+    if (allRevealed) return true;
+    const p = Math.floor(i / PAGE_SIZE);
+    return revealedPages.has(p);
+  }
+
+  function isRevealedForQuestion(i) {
+    return questionLocked(i);
+  }
+
+  function updateStat() {
+    let n = 0;
+    for (let i = 0; i < BANK.length; i++) {
+      if (getSelected(i) !== null) n++;
+    }
+    stat.textContent =
+      "第 " + (currentPage + 1) + " / " + NUM_PAGES + " 頁（第 " +
+      (currentPage * PAGE_SIZE + 1) +
+      "–" +
+      Math.min((currentPage + 1) * PAGE_SIZE, BANK.length) +
+      " 題）· 已作答 " +
+      n +
+      " / " +
+      BANK.length;
+  }
+
+  function scoreRange(start, endExclusive) {
+    let correct = 0;
+    let unanswered = 0;
+    let wrong = 0;
+    for (let i = start; i < endExclusive; i++) {
+      const p = getSelected(i);
+      if (p === null) unanswered++;
+      else if (p === BANK[i].answer) correct++;
+      else wrong++;
+    }
+    return { correct, unanswered, wrong, total: endExclusive - start };
+  }
+
+  function scoreAll() {
+    return scoreRange(0, BANK.length);
+  }
+
+  function applyRevealToCard(card, globalIndex) {
+    const ans = BANK[globalIndex].answer;
+    const picked = getSelected(globalIndex);
+    const show = isRevealedForQuestion(globalIndex);
+    const locked = questionLocked(globalIndex);
+    card.querySelectorAll("label.opt").forEach(function (lab, j) {
+      lab.classList.remove("correct", "wrongPick");
+      if (show) {
+        if (j === ans) lab.classList.add("correct");
+        if (picked !== null && j === picked && j !== ans) lab.classList.add("wrongPick");
+      }
+    });
+    card.querySelectorAll("input[type=radio]").forEach(function (inp) {
+      inp.disabled = locked;
+    });
+  }
+
+  function goPage(p) {
+    currentPage = Math.max(0, Math.min(NUM_PAGES - 1, p));
+    render();
+  }
+
+  function buildPager() {
+    const wrap = document.createElement("div");
+    wrap.className = "pager";
+    const prev = document.createElement("button");
+    prev.type = "button";
+    prev.textContent = "← 上一頁";
+    prev.disabled = currentPage === 0;
+    prev.addEventListener("click", function () {
+      goPage(currentPage - 1);
+    });
+    const next = document.createElement("button");
+    next.type = "button";
+    next.textContent = "下一頁 →";
+    next.disabled = currentPage >= NUM_PAGES - 1;
+    next.addEventListener("click", function () {
+      goPage(currentPage + 1);
+    });
+    const lbl = document.createElement("span");
+    lbl.className = "page-label";
+    lbl.textContent = "跳頁：";
+    const btns = document.createElement("div");
+    btns.className = "page-btns";
+    for (let p = 0; p < NUM_PAGES; p++) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "page-num" + (p === currentPage ? " active" : "");
+      b.textContent = String(p + 1);
+      b.addEventListener("click", function () {
+        goPage(p);
+      });
+      btns.appendChild(b);
+    }
+    wrap.appendChild(prev);
+    wrap.appendChild(next);
+    wrap.appendChild(lbl);
+    wrap.appendChild(btns);
+    return wrap;
+  }
+
+  function render() {
+    root.innerHTML = "";
+    const start = currentPage * PAGE_SIZE;
+    const end = Math.min(start + PAGE_SIZE, BANK.length);
+
+    const actions = document.createElement("div");
+    actions.className = "page-actions";
+    actions.innerHTML =
+      "<span style='font-size:0.85rem;color:var(--muted)'>此頁可「本頁交卷計分」練習；「全部交卷」統計整份試卷（不列出整串未作答題號）。</span>";
+    root.appendChild(actions);
+
+    for (let i = start; i < end; i++) {
+      const item = BANK[i];
+      const card = document.createElement("section");
+      card.className = "card";
+      card.dataset.index = String(i);
+      const h2 = document.createElement("h2");
+      h2.textContent = "第 " + (i + 1) + " 題";
+      const title = document.createElement("div");
+      title.className = "q-title";
+      title.textContent = item.stem;
+      const opts = document.createElement("div");
+      opts.className = "opts";
+      item.choices.forEach(function (text, j) {
+        const id = "q" + i + "_o" + j;
+        const lab = document.createElement("label");
+        lab.className = "opt";
+        lab.htmlFor = id;
+        const inp = document.createElement("input");
+        inp.type = "radio";
+        inp.name = "q" + i;
+        inp.value = String(j);
+        inp.id = id;
+        if (getSelected(i) === j) inp.checked = true;
+        inp.addEventListener("change", function () {
+          if (questionLocked(i)) return;
+          userAnswers[i] = parseInt(inp.value, 10);
+          updateStat();
+        });
+        const span = document.createElement("span");
+        span.textContent = LETTERS[j] + ". " + text;
+        lab.appendChild(inp);
+        lab.appendChild(span);
+        opts.appendChild(lab);
+      });
+      card.appendChild(h2);
+      card.appendChild(title);
+      card.appendChild(opts);
+      root.appendChild(card);
+      applyRevealToCard(card, i);
+    }
+
+    root.appendChild(buildPager());
+    updateStat();
+  }
+
+  document.getElementById("btnSubmitPage").addEventListener("click", function () {
+    const start = currentPage * PAGE_SIZE;
+    const end = Math.min(start + PAGE_SIZE, BANK.length);
+    revealedPages.add(currentPage);
+    const r = scoreRange(start, end);
+    const pct = Math.round((r.correct / r.total) * 1000) / 10;
+    banner.className = "result-banner show";
+    let sub =
+      "<div class='sub'>本頁未作答 <strong style='color:var(--warn)'>" +
+      r.unanswered +
+      "</strong> 題 · 答錯 <strong style='color:var(--bad)'>" +
+      r.wrong +
+      "</strong> 題（題號僅在此頁範圍內，請見左側題號）</div>";
+    banner.innerHTML =
+      "<strong>" +
+      r.correct +
+      "</strong> / " +
+      r.total +
+      " 題答對（本頁 " +
+      pct +
+      "%）" +
+      sub;
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("btnSubmitAll").addEventListener("click", function () {
+    allRevealed = true;
+    for (let p = 0; p < NUM_PAGES; p++) revealedPages.add(p);
+    const r = scoreAll();
+    const pct = Math.round((r.correct / BANK.length) * 1000) / 10;
+    banner.className = "result-banner show";
+    banner.innerHTML =
+      "<strong>" +
+      r.correct +
+      "</strong> / " +
+      BANK.length +
+      " 題答對（" +
+      pct +
+      "%）" +
+      "<div class='sub'>未作答共 <strong style=\"color:var(--warn)\">" +
+      r.unanswered +
+      "</strong> 題 · 答錯共 <strong style=\"color:var(--bad)\">" +
+      r.wrong +
+      "</strong> 題 · 可切換頁碼對照綠色正解與紅框錯選</div>";
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("btnShowKeyPage").addEventListener("click", function () {
+    revealedPages.add(currentPage);
+    banner.className = "result-banner show";
+    banner.innerHTML =
+      "已顯示<strong>本頁</strong>正解（綠色）。若曾選錯，您的選項會以紅框標示。";
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("btnShowKeyAll").addEventListener("click", function () {
+    allRevealed = true;
+    for (let p = 0; p < NUM_PAGES; p++) revealedPages.add(p);
+    banner.className = "result-banner show";
+    banner.textContent =
+      "已顯示全部正解。可逐頁瀏覽；綠色為正確選項，紅框為您選錯的項目。";
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  document.getElementById("btnReset").addEventListener("click", function () {
+    currentPage = 0;
+    allRevealed = false;
+    revealedPages.clear();
+    for (let i = 0; i < BANK.length; i++) userAnswers[i] = null;
+    banner.className = "result-banner";
+    banner.textContent = "";
+    render();
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  });
+
+  render();
+})();
+  </script>
+</body>
+</html>
